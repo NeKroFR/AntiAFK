@@ -1,9 +1,12 @@
+'''
+created by NeKro
+'''
 import time
 from pynput.keyboard import Key, Listener, Controller
 
 
-delay = 5
-presskey = 1
+delay = 3
+presskey = 3
 keyboard = Controller()
 
 while True:
@@ -23,5 +26,3 @@ while True:
     keyboard.press("d")
     time.sleep(presskey)
     keyboard.release("d") 
-
-    
