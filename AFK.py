@@ -5,28 +5,31 @@ import time
 from pynput.keyboard import Key, Listener, Controller
 
 keyboard = Controller()
-delay = 3
-
+delay = 1
+i = int('0')
 
 def hold_Z (presskey):
-    start = time.time()
-    while time.time() - start < presskey:
         keyboard.press("z")
+        time.sleep(5)
+        keyboard.release("z")
 
 def hold_S (presskey):
-    start = time.time()
-    while time.time() - start < presskey:
+    for i in range(250):
         keyboard.press("s")
+        time.sleep(5)
+        keyboard.release("s")
 
 def hold_Q (presskey):
-    start = time.time()
-    while time.time() - start < presskey:
+    for i in range(250):
         keyboard.press("q")
-
-def hold_D (presskey):
-    start = time.time()
-    while time.time() - start < presskey:
+        time.sleep(5)
+        keyboard.release("q")
+z
+def hold_D (presskey):    
+    for i in range(250):
         keyboard.press("d")
+        time.sleep(5)
+        keyboard.release("d")
 
 
 while True:
