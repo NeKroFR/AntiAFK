@@ -1,18 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
-	"fmt"
-  "strconv"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"fyne.io/fyne/v2"
+	"strconv"
 )
 
-
 var delay int
+var isRunning bool
+var startStopButton *widget.Button 
+var textEntry *widget.Entry
 
 func showErrorWindow(myApp fyne.App, parent fyne.Window, errorMessage string) {
     errorWindow := myApp.NewWindow("ERROR")
@@ -21,23 +23,22 @@ func showErrorWindow(myApp fyne.App, parent fyne.Window, errorMessage string) {
         errorWindow.Close()
     })
 
-    content := container.NewVBox(
-        errorLabel,
-        closeButton,
-    )
-
+    content := container.NewVBox(errorLabel,closeButton,)
     errorWindow.SetContent(content)
     errorWindow.Resize(fyne.Size{Width: 300, Height: 150})
     errorWindow.Show()
 }
 
-
 func main() {
 	delay = 5
+	isRunning = false
 	myApp := app.New()
 	myWindow := myApp.NewWindow("AntiAFK")
+	myWindow.Resize(fyne.NewSize(200, 200))
+	myWindow.SetFixedSize(true)
+
 	delayLabel := widget.NewLabel(fmt.Sprintf("Delay : %d secs", delay))
-	textEntry := widget.NewEntry()
+	textEntry = widget.NewEntry()
 	updateButton := widget.NewButton("Update", func() {
 		newDelayStr := textEntry.Text
 		newDelay, err := strconv.Atoi(newDelayStr)
@@ -48,22 +49,24 @@ func main() {
 		delay = newDelay
 		delayLabel.SetText(fmt.Sprintf("Delay: %d seconds", delay))
 	})
-	
-	
 
-	startButton := widget.NewButton("Start", func() {
-		log.Println("Start button clicked")
-		//start button in stop and if stop is pressed kill the loop
-		go AntiAFK(textEntry.Text)
+	startStopButton = widget.NewButton("Start", func() {
+		if !isRunning {
+			isRunning = true
+			startStopButton.SetText("Stop")
+			textEntry.Disable()
+			go AntiAFK(textEntry.Text)
+		} else {
+			isRunning = false
+			startStopButton.SetText("Start")
+			textEntry.Enable()
+		}
 	})
 
 	content := container.NewVBox(
 		delayLabel,
-		container.NewHBox(
-			textEntry,
-			updateButton,
-		),
-		startButton,
+		container.NewHBox(textEntry,updateButton,),
+		startStopButton,
 	)
 
 	myWindow.SetContent(content)
@@ -71,8 +74,8 @@ func main() {
 }
 
 func AntiAFK(delayText string) {
-	//jump for real
-	for {
+	for isRunning {
+		// real jump
 		log.Println("jump")
 		time.Sleep(time.Second * time.Duration(delay))
 	}
