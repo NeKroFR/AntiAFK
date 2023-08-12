@@ -2,32 +2,19 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"fyne.io/fyne/v2"
 	"strconv"
+	"github.com/micmonay/keybd_event"
 )
 
 var delay int
 var isRunning bool
 var startStopButton *widget.Button 
 var textEntry *widget.Entry
-
-func showErrorWindow(myApp fyne.App, parent fyne.Window, errorMessage string) {
-    errorWindow := myApp.NewWindow("ERROR")
-    errorLabel := widget.NewLabel(errorMessage)
-    closeButton := widget.NewButton("Close", func() {
-        errorWindow.Close()
-    })
-
-    content := container.NewVBox(errorLabel,closeButton,)
-    errorWindow.SetContent(content)
-    errorWindow.Resize(fyne.Size{Width: 300, Height: 150})
-    errorWindow.Show()
-}
 
 func main() {
 	delay = 5
@@ -73,10 +60,38 @@ func main() {
 	myWindow.ShowAndRun()
 }
 
+func showErrorWindow(myApp fyne.App, parent fyne.Window, errorMessage string) {
+    errorWindow := myApp.NewWindow("ERROR")
+    errorLabel := widget.NewLabel(errorMessage)
+    closeButton := widget.NewButton("Close", func() {
+        errorWindow.Close()
+    })
+
+    content := container.NewVBox(errorLabel,closeButton,)
+    errorWindow.SetContent(content)
+    errorWindow.Resize(fyne.Size{Width: 300, Height: 150})
+    errorWindow.Show()
+}
+
+func Jump() {
+	kb, err := keybd_event.NewKeyBonding()
+	if err != nil {
+		myApp := app.New()
+		myWindow := myApp.NewWindow("AntiAFK")
+		showErrorWindow(myApp, myWindow,"Error creating keybd_event:"+ err.Error())
+		return
+	}
+
+	kb.SetKeys(keybd_event.VK_SPACE)
+	kb.Press()
+	time.Sleep(500 * time.Millisecond)
+	kb.Release()
+}
+
+
 func AntiAFK(delayText string) {
 	for isRunning {
-		// real jump
-		log.Println("jump")
+		Jump()
 		time.Sleep(time.Second * time.Duration(delay))
 	}
 }
